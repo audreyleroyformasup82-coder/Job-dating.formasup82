@@ -1289,11 +1289,17 @@
       event.preventDefault();
       if (state.isSubmitting) return;
 
+      const nameInputEl = document.getElementById("candidate-name-input");
+      const emailInputEl = document.getElementById("candidate-email-input");
+
       const formation = getFormationById(state.selectedFormationId);
       const company = getCompanyById(state.selectedCompanyId);
       const slot = state.selectedSlot;
-      const candidateName = state.candidateName.trim();
-      const candidateEmail = state.candidateEmail.trim();
+      const candidateName = (nameInputEl ? nameInputEl.value : state.candidateName || "").trim();
+      const candidateEmail = (emailInputEl ? emailInputEl.value : state.candidateEmail || "").trim();
+
+      state.candidateName = candidateName;
+      state.candidateEmail = candidateEmail;
 
       if (!formation || !company || !slot) {
         showToast("Veuillez sélectionner une entreprise et un créneau horaire.", "error");
