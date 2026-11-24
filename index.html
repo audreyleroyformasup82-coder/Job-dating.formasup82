@@ -732,6 +732,16 @@
 
     const LOCAL_FALLBACK_KEY = "formasup82_jobdating_reservations_v1";
     const SHARED_SYNC_SETTINGS_KEY = "formasup82_jobdating_shared_sync_v1";
+    const DEFAULT_SHARED_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyAxtMFfbHopkezQIjsXhIHgzuu6RE0SlHM",
+      authDomain: "job-dating-190d6.firebaseapp.com",
+      databaseURL: "https://job-dating-190d6-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "job-dating-190d6",
+      storageBucket: "job-dating-190d6.firebasestorage.app",
+      messagingSenderId: "877624410392",
+      appId: "1:877624410392:web:dfb3a1838744b0257d5e6d",
+      measurementId: "G-X64J11CQJE"
+    };
     let app = null;
     let db = null;
     let auth = null;
@@ -983,7 +993,7 @@
           console.warn("JSON __firebase_config invalide :", err);
         }
       }
-      return { config: null, source: "none" };
+      return { config: DEFAULT_SHARED_FIREBASE_CONFIG, source: "default" };
     }
 
     async function initCloudSync() {
