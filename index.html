@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Dating – FORMASUP 82’</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --formasup-blue: #1E4E96;
+      --formasup-mint: #72C3AD;
+      --blue-navy: #0C376A;
+      --cyan-accent: #26A6B5;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #ffffff;
+      color: #0f172a;
+      overflow-x: hidden;
+    }
+
+    /* Écritures et accents en dégradé bleu sur fond blanc */
+    .text-blue-gradient {
+      background: linear-gradient(135deg, #0C376A 0%, #1E4E96 55%, #26A6B5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+      line-height: 1.3;
+      padding: 0.1em 0.08em 0.18em 0;
+    }
+
+    .text-blue-gradient-soft {
+      background: linear-gradient(90deg, #1E4E96 0%, #0077B6 60%, #26A6B5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+      line-height: 1.3;
+      padding: 0.05em 0.06em 0.12em 0;
+    }
+
+    .bg-blue-gradient {
+      background: linear-gradient(135deg, #0C376A 0%, #1E4E96 55%, #0077B6 100%);
+    }
+
+    .bg-blue-gradient-hover:hover {
+      background: linear-gradient(135deg, #082547 0%, #163b73 55%, #005f92 100%);
+    }
+
+    /* Enveloppe décorative du billet fidèle au document Word */
+    .ticket-sheet {
+      position: relative;
+      background: #ffffff;
+      border-radius: 1.5rem;
+      padding: 1.5rem 1.25rem 2.25rem;
+      border: 1.5px solid #cbd5e1;
+      box-shadow: 0 18px 42px -14px rgba(12, 55, 106, 0.18);
+      overflow: hidden;
+    }
+
+    .ticket-sheet::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 36%;
+      background: linear-gradient(135deg, #0b2654 0%, #0e336b 68%, #09224b 100%);
+      z-index: 0;
+    }
+
+    .ticket-sheet-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .ticket-card {
+      background: #ffffff;
+      border-radius: 1rem;
+      border: 1.5px solid #334155;
+      box-shadow: 0 14px 28px -8px rgba(9, 34, 75, 0.32);
+      overflow: hidden;
+    }
+
+    .passenger-box {
+      background: linear-gradient(90deg, #dce4e8 0%, #eef2f5 65%, #f8fafc 100%);
+      border: 1.5px solid #1e293b;
+      border-radius: 0.5rem;
+      padding: 0.45rem 0.75rem;
+    }
+
+    .boarding-time-badge {
+      background-color: #dcecef;
+      color: #26A6B5;
+      padding: 0.18rem 0.65rem;
+      border-radius: 0.35rem;
+      font-weight: 900;
+      display: inline-block;
+    }
+
+    .ticket-stub {
+      border-left: 2px dashed #475569;
+      background: #ffffff;
+    }
+
+    @media (max-width: 767px) {
+      .ticket-stub {
+        border-left: none;
+        border-top: 2px dashed #475569;
+      }
+    }
+
+    .barcode-visual {
+      background-image: repeating-linear-gradient(
+        90deg,
+        #0f172a 0px,
+        #0f172a 2px,
+        transparent 2px,
+        transparent 4px,
+        #0f172a 4px,
+        #0f172a 6px,
+        transparent 6px,
+        transparent 8px,
+        #0f172a 8px,
+        #0f172a 9px,
+        transparent 9px,
+        transparent 12px,
+        #0f172a 12px,
+        #0f172a 15px,
+        transparent 15px,
+        transparent 17px
+      );
+      height: 52px;
+      width: 100%;
+    }
+
+    /* Impression propre sans page blanche */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 10mm;
+      }
+
+      body {
+        background: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      #convocation-section {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+        border: none !important;
+      }
+
+      .ticket-sheet {
+        box-shadow: none !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 18px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .ticket-sheet::after,
+      .passenger-box,
+      .boarding-time-badge,
+      .barcode-visual {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-white text-slate-900 min-h-screen flex flex-col">
+
+  <!-- BANDEAU & EN-TÊTE -->
+  <header class="bg-white border-b border-slate-100 sticky top-0 z-30 backdrop-blur-md bg-white/95 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+      <a href="#top" onclick="resetToHome(event)" class="flex items-center gap-3 group focus:outline-none">
+        <div class="flex items-center select-none bg-white px-1 py-0.5">
+          <svg class="h-10 sm:h-12 w-auto" viewBox="0 0 340 82" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo FORMASUP">
+            <text x="4" y="66" font-family="'Antonio', 'Arial Narrow', Impact, sans-serif" font-weight="700" font-size="68" letter-spacing="1.5" fill="#1E4E96">FORMA</text>
+            <text x="196" y="66" font-family="'Antonio', 'Arial Narrow', Impact, sans-serif" font-weight="500" font-size="68" letter-spacing="1.5" fill="#111111">SUP</text>
+            <path d="M306 12H330V31H321L313 42V31H306V12Z" fill="#72C3AD" />
+          </svg>
+        </div>
+        <span class="hidden md:inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-sky-50 text-[#1E4E96] border border-sky-200">
+          Antenne 82 • Montauban
+        </span>
+      </a>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button
+          type="button"
+          onclick="scrollToSection('formations-section')"
+          class="inline-flex items-center px-3.5 py-2 rounded-xl text-sm font-semibold text-[#1E4E96] hover:bg-sky-50 transition cursor-pointer"
+        >
+          Formations
+        </button>
+        <button
+          type="button"
+          onclick="scrollToSection('booking-section')"
+          class="inline-flex items-center px-3.5 py-2 rounded-xl text-sm font-bold text-white bg-blue-gradient bg-blue-gradient-hover shadow-xs transition cursor-pointer"
+        >
+          Réserver
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NOTIFICATIONS TOAST -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full px-4 sm:px-0 pointer-events-none no-print"></div>
+
+  <main id="top" class="flex-1">
+
+    <!-- PRÉSENTATION DE L'ÉVÉNEMENT -->
+    <section class="relative bg-white pt-8 pb-12 sm:pt-12 sm:pb-16 border-b border-slate-100 no-print">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-4xl mx-auto">
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-50 to-cyan-50 border border-sky-200 mb-5">
+            <span class="w-2 h-2 rounded-full bg-[#26A6B5] animate-pulse"></span>
+            <span class="text-xs sm:text-sm font-bold tracking-wide uppercase text-blue-gradient">
+              Recrutement &amp; Alternance • FORMASUP 82’
+            </span>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-blue-gradient mb-5" style="display: inline-block; line-height: 1.3; padding: 0.1em 0.08em 0.18em 0;">
+            Job Dating – FORMASUP 82’
+          </h1>
+
+          <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto mb-8">
+            Rencontrez nos entreprises partenaires, réservez votre créneau d’entretien de 10 minutes (avec 10 minutes de pause entre chaque entretien) et obtenez immédiatement votre carte d’embarquement en 2 billets d’avion électroniques.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mb-7">
+            <div class="p-4 sm:p-5 rounded-2xl bg-white border border-sky-100 shadow-sm hover:border-sky-300 transition">
+              <div class="text-xs font-bold uppercase tracking-wider text-cyan-700 mb-1">Date</div>
+              <div class="text-lg sm:text-xl font-extrabold text-blue-gradient-soft">Première semaine de Mars</div>
+              <div class="text-xs text-slate-500 mt-1">Sur réservation de créneau</div>
+            </div>
+
+            <div class="p-4 sm:p-5 rounded-2xl bg-white border border-sky-100 shadow-sm hover:border-sky-300 transition">
+              <div class="text-xs font-bold uppercase tracking-wider text-cyan-700 mb-1">Lieu</div>
+              <div class="text-base sm:text-lg font-extrabold text-blue-gradient-soft">400 avenue André Jorigné</div>
+              <div class="text-sm font-semibold text-slate-700">82000 Montauban</div>
+            </div>
+
+            <div class="p-4 sm:p-5 rounded-2xl bg-white border border-sky-100 shadow-sm hover:border-sky-300 transition">
+              <div class="text-xs font-bold uppercase tracking-wider text-cyan-700 mb-1">Horaires</div>
+              <div class="text-lg sm:text-xl font-extrabold text-blue-gradient-soft">9h – 12h</div>
+              <div class="text-xs text-slate-500 mt-1">Entretiens de 10 min • Pause de 10 min entre chaque entretien</div>
+            </div>
+          </div>
+
+          <div class="inline-flex flex-col sm:flex-row items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-[#0C376A] via-[#1E4E96] to-[#26A6B5] text-white shadow-md">
+            <svg class="w-5 h-5 text-cyan-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+            </svg>
+            <span class="font-bold text-sm sm:text-base tracking-wide">
+              N’oubliez pas d’apporter votre carte d’embarquement le jour J !
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ESPACE ADMIN (PROTÉGÉ PAR MOT DE PASSE) -->
+    <section id="admin-panel-section" class="hidden py-10 bg-sky-50/50 border-b border-sky-200 no-print">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-3xl border border-sky-200 shadow-lg p-6 sm:p-8">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-6 border-b border-slate-100">
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#0C376A] text-white mb-2">
+                ESPACE ADMINISTRATEUR
+              </span>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-blue-gradient">
+                Tableau des Réservations – Job Dating FORMASUP 82’
+              </h2>
+              <p class="text-sm text-slate-600 mt-1">
+                Suivi complet des créneaux réservés, export Excel (.xlsx) et gestion des disponibilités.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onclick="exportReservationsToXlsx()"
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-gradient bg-blue-gradient-hover shadow-sm transition cursor-pointer"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Exporter Excel (.xlsx)
+              </button>
+
+              <button
+                type="button"
+                onclick="logoutAdmin()"
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+              >
+                Déconnexion
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+            <div class="p-4 rounded-2xl bg-sky-50/70 border border-sky-100">
+              <div class="text-xs font-bold uppercase text-blue-900">Total Réservations</div>
+              <div id="admin-total-count" class="text-2xl font-black text-blue-gradient mt-1">0</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-sky-50/70 border border-sky-100">
+              <div class="text-xs font-bold uppercase text-blue-900">Entreprises Participantes</div>
+              <div class="text-2xl font-black text-blue-gradient mt-1">14 Entreprises</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-sky-50/70 border border-sky-100">
+              <div class="text-xs font-bold uppercase text-blue-900">Mode de partage actuel</div>
+              <div id="admin-sync-mode-label" class="text-sm font-extrabold text-[#1E4E96] mt-1.5">Local navigateur</div>
+            </div>
+          </div>
+
+          <!-- Configuration base partagée (utile sur GitHub Pages pour bloquer pour tous) -->
+          <div class="mb-6 p-5 rounded-2xl bg-slate-50 border border-sky-200">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+              <div>
+                <h3 class="text-sm font-extrabold uppercase tracking-wider text-[#0C376A]">
+                  Partage multi-appareils en temps réel (GitHub Pages / Externe)
+                </h3>
+                <p class="text-xs text-slate-600 mt-0.5">
+                  Pour que les créneaux soient bloqués sur tous les téléphones/ordinateurs depuis votre lien GitHub Pages, renseignez un projet Firebase puis cliquez sur Enregistrer et synchroniser.
+                </p>
+              </div>
+              <span id="shared-sync-status-badge" class="self-start sm:self-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900">
+                Local uniquement
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label for="shared-room-key-input" class="block text-xs font-bold text-slate-700 mb-1">
+                  Identifiant de synchronisation de l’événement
+                </label>
+                <input
+                  id="shared-room-key-input"
+                  type="text"
+                  placeholder="Ex. formasup82-jobdating"
+                  class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-sm outline-none focus:border-[#1E4E96]"
+                />
+              </div>
+              <div>
+                <label for="shared-firebase-config-input" class="block text-xs font-bold text-slate-700 mb-1">
+                  Configuration JSON Firebase (recommandée pour GitHub Pages)
+                </label>
+                <input
+                  id="shared-firebase-config-input"
+                  type="text"
+                  placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'
+                  class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-sm font-mono outline-none focus:border-[#1E4E96]"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-end gap-2.5 mt-3">
+              <button
+                type="button"
+                onclick="clearSharedSyncConfig()"
+                class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 bg-white hover:bg-slate-100 border border-slate-300 transition cursor-pointer"
+              >
+                Réinitialiser
+              </button>
+              <button
+                type="button"
+                onclick="saveSharedSyncConfig()"
+                class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-gradient bg-blue-gradient-hover transition cursor-pointer"
+              >
+                Enregistrer et synchroniser
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto rounded-2xl border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+              <thead class="bg-gradient-to-r from-[#0C376A] to-[#26A6B5] text-white">
+                <tr>
+                  <th scope="col" class="px-4 py-3.5 font-bold">Entreprise choisie</th>
+                  <th scope="col" class="px-4 py-3.5 font-bold">Formation</th>
+                  <th scope="col" class="px-4 py-3.5 font-bold">Salle</th>
+                  <th scope="col" class="px-4 py-3.5 font-bold">Nom et Prénom du candidat</th>
+                  <th scope="col" class="px-4 py-3.5 font-bold">Heure de l’entretien</th>
+                  <th scope="col" class="px-4 py-3.5 font-bold">Adresse mail</th>
+                  <th scope="col" class="px-4 py-3.5 font-bold">Date/heure d'enregistrement</th>
+                  <th scope="col" class="px-4 py-3.5 font-bold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-reservations-tbody" class="divide-y divide-slate-100 bg-white"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LES 7 FORMATIONS SÉLECTIONNABLES -->
+    <section id="formations-section" class="py-12 sm:py-16 bg-white no-print">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-8">
+          <span class="text-xs font-extrabold uppercase tracking-widest text-[#26A6B5]">Étape 1</span>
+          <h2 class="text-2xl sm:text-4xl font-extrabold text-blue-gradient mt-1">
+            Choisissez votre formation
+          </h2>
+          <p class="text-slate-600 mt-2 max-w-2xl">
+            Sélectionnez une formation pour accéder à la plateforme de réservation de ses 2 entreprises partenaires ou ouvrez sa fiche officielle dans un nouvel onglet.
+          </p>
+        </div>
+
+        <div id="formations-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </div>
+    </section>
+
+    <!-- PLATEFORME DE RÉSERVATION DE CRÉNEAUX -->
+    <section id="booking-section" class="py-12 sm:py-16 bg-gradient-to-b from-sky-50/40 via-white to-white border-t border-slate-100 no-print">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-8">
+          <span class="text-xs font-extrabold uppercase tracking-widest text-[#26A6B5]">Étape 2 &amp; 3</span>
+          <h2 class="text-2xl sm:text-4xl font-extrabold text-blue-gradient mt-1">
+            Plateforme de réservation de créneaux
+          </h2>
+          <p id="booking-subtitle" class="text-slate-600 mt-2">
+            Sélectionnez une formation ci-dessus pour afficher ses 2 entreprises et leurs créneaux du matin (9h–12h, entretiens de 10 min avec pause de 10 min entre chaque entretien).
+          </p>
+        </div>
+
+        <div id="booking-workspace" class="space-y-8"></div>
+      </div>
+    </section>
+
+    <!-- CARTE D'EMBARQUEMENT : 2 BILLETS ÉLECTRONIQUES -->
+    <section id="convocation-section" class="hidden py-12 sm:py-16 bg-slate-50/80 border-t border-sky-100">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 no-print">
+          <div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 mb-2">
+              Réservation confirmée • Créneau bloqué • Embarquement validé
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-blue-gradient">
+              Carte d’embarquement Job Dating – 2 Billets Électroniques
+            </h2>
+            <p class="text-sm text-slate-600 mt-1">
+              N’oubliez pas d’apporter votre carte d’embarquement le jour J !
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onclick="window.print()"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-gradient bg-blue-gradient-hover shadow-sm transition cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              Imprimer les 2 billets
+            </button>
+
+            <button
+              id="download-pdf-btn"
+              type="button"
+              onclick="downloadConvocationPdf()"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[#0C376A] bg-white hover:bg-sky-50 border border-sky-300 shadow-2xs transition cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Télécharger en PDF
+            </button>
+
+            <button
+              type="button"
+              onclick="reserveAnotherSlot()"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 transition cursor-pointer"
+            >
+              Nouvelle réservation
+            </button>
+          </div>
+        </div>
+
+        <!-- Bandeau état d'envoi des e-mails EmailJS -->
+        <div id="email-status-banner" class="hidden mb-6 p-4 rounded-2xl border text-sm font-medium no-print"></div>
+
+        <!-- Zone capturable et imprimable contenant les 2 billets -->
+        <div id="tickets-printable-area" class="space-y-8"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PIED DE PAGE -->
+  <footer class="bg-white border-t border-slate-200 py-8 mt-auto no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-600">
+      <div>
+        <span class="font-bold text-blue-gradient">Job Dating – FORMASUP 82’</span> • Première semaine de Mars
+      </div>
+      <div class="flex flex-wrap items-center justify-center sm:justify-end gap-4">
+        <span>400 avenue André Jorigné, 82000 Montauban • Horaires : 9h – 12h</span>
+        <button
+          id="admin-nav-btn"
+          type="button"
+          onclick="openAdminModalOrPanel()"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-[#1E4E96] hover:bg-sky-50 border border-slate-200 transition cursor-pointer"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span id="admin-nav-label">Accès Admin</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL CONNEXION ADMIN -->
+  <div id="admin-login-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4 no-print" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-sky-100">
+      <div class="flex items-center justify-between mb-4">
+        <h3 id="admin-modal-title" class="text-xl font-extrabold text-blue-gradient">
+          Connexion Administrateur
+        </h3>
+        <button
+          type="button"
+          onclick="closeAdminModal()"
+          class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+          aria-label="Fermer la fenêtre"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <p class="text-sm text-slate-600 mb-5">
+        Saisissez le mot de passe administrateur pour accéder au tableau des réservations et à l’export Excel (.xlsx).
+      </p>
+
+      <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div>
+          <label for="admin-password-input" class="block text-sm font-bold text-slate-800 mb-1.5">
+            Mot de passe
+          </label>
+          <input
+            id="admin-password-input"
+            type="password"
+            required
+            autocomplete="current-password"
+            placeholder="Mot de passe administrateur"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none transition text-slate-900"
+          />
+          <p id="admin-login-error" class="hidden text-xs font-semibold text-red-600 mt-1.5">
+            Mot de passe incorrect. Veuillez réessayer.
+          </p>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button
+            type="button"
+            onclick="closeAdminModal()"
+            class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+          >
+            Annuler
+          </button>
+          <button
+            type="submit"
+            class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-gradient bg-blue-gradient-hover shadow-sm transition cursor-pointer"
+          >
+            Se connecter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      onSnapshot,
+      runTransaction,
+      deleteDoc
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // =========================================================================
+    // CONFIGURATION ÉVÉNEMENT, FORMATIONS, ENTREPRISES & CRÉNEAUX (MATIN 9H-12H)
+    // =========================================================================
+
+    const EVENT_INFO = {
+      company: "FORMASUP' 82",
+      address: "400 avenue André Jorigné, 82000 Montauban",
+      eventDate: "Première semaine de Mars",
+      ticketDate: "À définir",
+      hours: "9h – 12h"
+    };
+
+    const EMAILJS_CONFIG = {
+      publicKey: "z67lY6ZJkmi1a2Dq4",
+      serviceId: "service_5sc3laa",
+      templateId: "template_z2k82w7",
+      organizerEmail: "audrey.leroy.formasup82@gmail.com"
+    };
+
+    if (window.emailjs && typeof window.emailjs.init === "function") {
+      try {
+        window.emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey });
+      } catch (e) {
+        console.warn("Initialisation EmailJS :", e);
+      }
+    }
+
+    // Créneaux de 9h00 à 12h00 : 10 min d'entretien + 10 min de pause entre chaque entretien
+    const TIME_SLOTS = [
+      "09:00", "09:20", "09:40",
+      "10:00", "10:20", "10:40",
+      "11:00", "11:20", "11:40"
+    ];
+
+    function getSlotEndLabel(startSlot) {
+      const [hStr, mStr] = startSlot.split(":");
+      const totalMinutes = parseInt(hStr, 10) * 60 + parseInt(mStr, 10) + 10;
+      const endH = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
+      const endM = String(totalMinutes % 60).padStart(2, "0");
+      return `${startSlot}–${endH}:${endM}`;
+    }
+
+    function getRoomForCompanyNumber(num) {
+      if (num === 1 || num === 2) return "SALLE PARIS";
+      if (num === 3 || num === 4) return "SALLE LONDRES";
+      return "SALLE SHANGAI";
+    }
+
+    const FORMATIONS = [
+      {
+        id: "assistant-rh",
+        name: "Assistant RH",
+        url: "https://formasup.com/formations/assistant-ressources-humaines",
+        companies: [
+          { id: "entreprise-1", name: "Entreprise 1", room: getRoomForCompanyNumber(1) },
+          { id: "entreprise-2", name: "Entreprise 2", room: getRoomForCompanyNumber(2) }
+        ]
+      },
+      {
+        id: "secretaire-comptable",
+        name: "Secrétaire comptable",
+        url: "https://formasup.com/formations/secretaire-comptable",
+        companies: [
+          { id: "entreprise-3", name: "Entreprise 3", room: getRoomForCompanyNumber(3) },
+          { id: "entreprise-4", name: "Entreprise 4", room: getRoomForCompanyNumber(4) }
+        ]
+      },
+      {
+        id: "gestionnaire-comptable-fiscal",
+        name: "Gestionnaire comptable et fiscal",
+        url: "https://formasup.com/formations/gestionnaire-comptable-et-fiscal",
+        companies: [
+          { id: "entreprise-5", name: "Entreprise 5", room: getRoomForCompanyNumber(5) },
+          { id: "entreprise-6", name: "Entreprise 6", room: getRoomForCompanyNumber(6) }
+        ]
+      },
+      {
+        id: "assistant-manager-unite-marchande",
+        name: "Assistant manager d’unité marchande",
+        url: "https://formasup.com/formations/assistant-manager-dunite-marchande",
+        companies: [
+          { id: "entreprise-7", name: "Entreprise 7", room: getRoomForCompanyNumber(7) },
+          { id: "entreprise-8", name: "Entreprise 8", room: getRoomForCompanyNumber(8) }
+        ]
+      },
+      {
+        id: "manager-etablissement-marchand",
+        name: "Manager d’établissement marchand",
+        url: "https://formasup.com/formations/manager-detablissement-marchand",
+        companies: [
+          { id: "entreprise-9", name: "Entreprise 9", room: getRoomForCompanyNumber(9) },
+          { id: "entreprise-10", name: "Entreprise 10", room: getRoomForCompanyNumber(10) }
+        ]
+      },
+      {
+        id: "concepteur-designer-ui",
+        name: "Concepteur designer UI",
+        url: "https://formasup.com/formations/concepteur-designer-ui-bac-3",
+        companies: [
+          { id: "entreprise-11", name: "Entreprise 11", room: getRoomForCompanyNumber(11) },
+          { id: "entreprise-12", name: "Entreprise 12", room: getRoomForCompanyNumber(12) }
+        ]
+      },
+      {
+        id: "conseiller-commercial",
+        name: "Conseiller commercial",
+        url: "https://formasup.com/formations/conseiller-commercial",
+        companies: [
+          { id: "entreprise-13", name: "Entreprise 13", room: getRoomForCompanyNumber(13) },
+          { id: "entreprise-14", name: "Entreprise 14", room: getRoomForCompanyNumber(14) }
+        ]
+      }
+    ];
+
+    const state = {
+      selectedFormationId: FORMATIONS[0].id,
+      selectedCompanyId: FORMATIONS[0].companies[0].id,
+      selectedSlot: null,
+      candidateName: "",
+      candidateEmail: "",
+      reservations: [],
+      latestConvocation: null,
+      isAdminAuthenticated: false,
+      isSubmitting: false,
+      cloudEnabled: false
+    };
+
+    const LOCAL_FALLBACK_KEY = "formasup82_jobdating_reservations_v1";
+    const SHARED_SYNC_SETTINGS_KEY = "formasup82_jobdating_shared_sync_v1";
+    let app = null;
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    let unsubscribeReservations = null;
+
+    function getSharedSyncSettings() {
+      try {
+        const raw = window.localStorage.getItem(SHARED_SYNC_SETTINGS_KEY);
+        const parsed = raw ? JSON.parse(raw) : {};
+        return {
+          roomKey: (parsed && parsed.roomKey ? String(parsed.roomKey).trim() : "") || "formasup82-jobdating",
+          firebaseConfigJson: parsed && parsed.firebaseConfigJson ? String(parsed.firebaseConfigJson).trim() : ""
+        };
+      } catch (e) {
+        return { roomKey: "formasup82-jobdating", firebaseConfigJson: "" };
+      }
+    }
+
+    function saveSharedSyncSettings(settings) {
+      try {
+        window.localStorage.setItem(SHARED_SYNC_SETTINGS_KEY, JSON.stringify(settings));
+      } catch (e) {
+        console.warn("Impossible d'enregistrer les paramètres de partage :", e);
+      }
+    }
+
+    function loadLocalFallbackReservations() {
+      try {
+        const raw = window.localStorage.getItem(LOCAL_FALLBACK_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveLocalFallbackReservations(list) {
+      try {
+        window.localStorage.setItem(LOCAL_FALLBACK_KEY, JSON.stringify(list || []));
+      } catch (e) {
+        console.warn("Impossible d'enregistrer en localStorage :", e);
+      }
+    }
+
+    function getFormationById(formationId) {
+      return FORMATIONS.find(f => f.id === formationId) || null;
+    }
+
+    function getCompanyById(companyId) {
+      for (const f of FORMATIONS) {
+        const found = f.companies.find(c => c.id === companyId);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function getSlotDocId(companyId, slot) {
+      return `${companyId}__${slot.replace(":", "-")}`;
+    }
+
+    function isSlotBooked(companyId, slot) {
+      const targetId = getSlotDocId(companyId, slot);
+      return state.reservations.some(r => r.id === targetId || (r.companyId === companyId && r.slot === slot));
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function formatCreatedAt(isoString) {
+      if (!isoString) return "";
+      const date = new Date(isoString);
+      if (Number.isNaN(date.getTime())) return isoString;
+      return date.toLocaleString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      if (!container) return;
+
+      const styles = {
+        success: "bg-emerald-900 text-white border-emerald-500",
+        error: "bg-rose-900 text-white border-rose-500",
+        info: "bg-[#0C376A] text-white border-sky-400"
+      };
+
+      const toast = document.createElement("div");
+      toast.className = `pointer-events-auto px-4 py-3 rounded-2xl border shadow-lg text-xs sm:text-sm font-semibold transition ${styles[type] || styles.info}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 4200);
+    }
+
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function resetToHome(event) {
+      if (event) event.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderFormations() {
+      const grid = document.getElementById("formations-grid");
+      if (!grid) return;
+
+      grid.innerHTML = FORMATIONS.map((formation, index) => {
+        const isSelected = formation.id === state.selectedFormationId;
+        const roomsLabel = formation.companies.map(c => `${c.name} (${c.room})`).join(" • ");
+
+        return `
+          <article class="rounded-3xl p-6 bg-white border transition flex flex-col justify-between ${
+            isSelected ? "border-[#1E4E96] shadow-lg ring-2 ring-sky-100" : "border-slate-200 hover:border-sky-300 shadow-xs"
+          }">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl text-xs font-black bg-sky-50 text-[#1E4E96] border border-sky-200">
+                  0${index + 1}
+                </span>
+                ${
+                  isSelected
+                    ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#1E4E96] text-white">Sélectionnée</span>'
+                    : '<span class="text-xs font-semibold text-slate-400">2 entreprises</span>'
+                }
+              </div>
+
+              <h3 class="text-lg sm:text-xl font-extrabold text-blue-gradient-soft mb-2">
+                ${escapeHtml(formation.name)}
+              </h3>
+
+              <p class="text-xs font-semibold text-slate-500 mb-5">
+                ${escapeHtml(roomsLabel)}
+              </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2.5 pt-3 border-t border-slate-100">
+              <a
+                href="${escapeHtml(formation.url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[#1E4E96] bg-sky-50 hover:bg-sky-100 border border-sky-200 transition"
+              >
+                <span>Découvrir</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+
+              <button
+                type="button"
+                onclick="openFormationBooking('${formation.id}')"
+                class="flex-1 inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-blue-gradient bg-blue-gradient-hover shadow-xs transition cursor-pointer"
+              >
+                Réserver un créneau
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function openFormationBooking(formationId) {
+      const formation = getFormationById(formationId);
+      if (!formation) return;
+      state.selectedFormationId = formation.id;
+      state.selectedCompanyId = formation.companies[0].id;
+      state.selectedSlot = null;
+      renderFormations();
+      renderBookingWorkspace();
+      scrollToSection("booking-section");
+    }
+
+    function selectCompanyForBooking(companyId) {
+      const company = getCompanyById(companyId);
+      if (!company) return;
+      if (state.selectedCompanyId !== company.id) {
+        state.selectedCompanyId = company.id;
+        state.selectedSlot = null;
+        renderBookingWorkspace();
+      }
+    }
+
+    function selectSlotForBooking(slot) {
+      const company = getCompanyById(state.selectedCompanyId);
+      if (!company || isSlotBooked(company.id, slot)) return;
+      state.selectedSlot = slot;
+      renderBookingWorkspace();
+      const input = document.getElementById("candidate-name-input");
+      if (input) {
+        input.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    function isValidAdminPasscode(passcode) {
+      return passcode === "admin123";
+    }
+
+    function updateSyncStatusUi(modeLabel, isShared) {
+      const modeEl = document.getElementById("admin-sync-mode-label");
+      const badgeEl = document.getElementById("shared-sync-status-badge");
+      if (modeEl) modeEl.textContent = modeLabel;
+      if (badgeEl) {
+        badgeEl.className = isShared
+          ? "self-start sm:self-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-900"
+          : "self-start sm:self-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900";
+        badgeEl.textContent = isShared ? "Partage actif" : "Local uniquement";
+      }
+    }
+
+    function populateSharedSyncInputs() {
+      const settings = getSharedSyncSettings();
+      const roomInput = document.getElementById("shared-room-key-input");
+      const cfgInput = document.getElementById("shared-firebase-config-input");
+      if (roomInput && !roomInput.value) roomInput.value = settings.roomKey;
+      if (cfgInput && !cfgInput.value) cfgInput.value = settings.firebaseConfigJson;
+    }
+
+    function resolveFirebaseConfig() {
+      const settings = getSharedSyncSettings();
+      if (settings.firebaseConfigJson) {
+        try {
+          return { config: JSON.parse(settings.firebaseConfigJson), source: "custom" };
+        } catch (err) {
+          console.warn("JSON Firebase invalide :", err);
+        }
+      }
+      if (typeof __firebase_config !== "undefined" && __firebase_config) {
+        try {
+          return { config: JSON.parse(__firebase_config), source: "env" };
+        } catch (err) {
+          console.warn("JSON __firebase_config invalide :", err);
+        }
+      }
+      return { config: null, source: "none" };
+    }
+
+    async function initCloudSync() {
+      state.reservations = loadLocalFallbackReservations();
+      state.cloudEnabled = false;
+      renderBookingWorkspace();
+      if (state.isAdminAuthenticated) {
+        renderAdminTable();
+      }
+
+      if (unsubscribeReservations) {
+        unsubscribeReservations();
+        unsubscribeReservations = null;
+      }
+
+      const resolved = resolveFirebaseConfig();
+      const settings = getSharedSyncSettings();
+      const activeCollectionId = resolved.source === "env" && typeof __app_id !== "undefined" && __app_id
+        ? __app_id
+        : settings.roomKey || "formasup82-jobdating";
+
+      if (!resolved.config) {
+        updateSyncStatusUi("Local navigateur (hors cloud)", false);
+        return;
+      }
+
+      try {
+        app = initializeApp(resolved.config, `formasup-${activeCollectionId}`);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        if (resolved.source === "env" && typeof __initial_auth_token !== "undefined" && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        currentUser = auth.currentUser;
+        if (!currentUser) {
+          updateSyncStatusUi("Local (connexion refusée)", false);
+          return;
+        }
+
+        state.cloudEnabled = true;
+        updateSyncStatusUi(`Cloud temps réel (${activeCollectionId})`, true);
+
+        const reservationsCol = collection(db, "artifacts", activeCollectionId, "public", "data", "reservations");
+
+        unsubscribeReservations = onSnapshot(
+          reservationsCol,
+          (snapshot) => {
+            const list = [];
+            snapshot.forEach((docSnap) => {
+              const data = docSnap.data() || {};
+              list.push({
+                id: docSnap.id,
+                formationId: data.formationId || "",
+                formationName: data.formationName || "",
+                companyId: data.companyId || "",
+                companyName: data.companyName || "",
+                room: data.room || "",
+                slot: data.slot || "",
+                candidateName: data.candidateName || "",
+                candidateEmail: data.candidateEmail || "",
+                createdBy: data.createdBy || "",
+                createdAt: data.createdAt || ""
+              });
+            });
+
+            state.reservations = list;
+            saveLocalFallbackReservations(list);
+
+            if (state.selectedSlot && state.selectedCompanyId && isSlotBooked(state.selectedCompanyId, state.selectedSlot)) {
+              state.selectedSlot = null;
+              showToast("Le créneau sélectionné vient d’être réservé par un autre candidat.", "info");
+            }
+
+            renderBookingWorkspace();
+            if (state.isAdminAuthenticated) {
+              renderAdminTable();
+            }
+          },
+          (error) => {
+            console.error("Erreur de synchronisation temps réel :", error);
+            state.cloudEnabled = false;
+            updateSyncStatusUi("Local (erreur cloud)", false);
+            showToast("Synchronisation cloud interrompue, repli local actif.", "error");
+          }
+        );
+      } catch (err) {
+        console.error("Échec initialisation Firebase :", err);
+        state.cloudEnabled = false;
+        updateSyncStatusUi("Local (config invalide)", false);
+      }
+    }
+
+    async function saveSharedSyncConfig() {
+      const roomInput = document.getElementById("shared-room-key-input");
+      const cfgInput = document.getElementById("shared-firebase-config-input");
+      const roomKey = (roomInput && roomInput.value ? roomInput.value.trim() : "") || "formasup82-jobdating";
+      const firebaseConfigJson = cfgInput && cfgInput.value ? cfgInput.value.trim() : "";
+
+      if (firebaseConfigJson) {
+        try {
+          JSON.parse(firebaseConfigJson);
+        } catch (e) {
+          showToast("Le JSON Firebase n'est pas valide. Vérifiez les guillemets et accolades.", "error");
+          return;
+        }
+      }
+
+      saveSharedSyncSettings({ roomKey, firebaseConfigJson });
+      await initCloudSync();
+      showToast(
+        firebaseConfigJson
+          ? "Base partagée connectée : les créneaux sont synchronisés pour tous."
+          : "Identifiant de synchronisation enregistré.",
+        "success"
+      );
+    }
+
+    async function clearSharedSyncConfig() {
+      window.localStorage.removeItem(SHARED_SYNC_SETTINGS_KEY);
+      const roomInput = document.getElementById("shared-room-key-input");
+      const cfgInput = document.getElementById("shared-firebase-config-input");
+      if (roomInput) roomInput.value = "formasup82-jobdating";
+      if (cfgInput) cfgInput.value = "";
+      await initCloudSync();
+      showToast("Paramètres de partage réinitialisés.", "info");
+    }
+
+    // =========================================================================
+    // PLATEFORME DE RÉSERVATION (ENTREPRISES, CRÉNEAUX MATIN & FORMULAIRE)
+    // =========================================================================
+
+    function renderBookingWorkspace() {
+      const workspace = document.getElementById("booking-workspace");
+      const subtitle = document.getElementById("booking-subtitle");
+      if (!workspace) return;
+
+      const formation = getFormationById(state.selectedFormationId) || FORMATIONS[0];
+      const activeCompany = getCompanyById(state.selectedCompanyId) || formation.companies[0];
+
+      if (subtitle) {
+        subtitle.innerHTML = `Formation sélectionnée : <strong class="text-[#1E4E96]">${escapeHtml(formation.name)}</strong> — Choisissez une entreprise puis un créneau de 10 minutes (9h–12h, pause de 10 min entre chaque entretien).`;
+      }
+
+      const companiesHtml = formation.companies.map(comp => {
+        const isCompSelected = comp.id === activeCompany.id;
+        const bookedCount = TIME_SLOTS.filter(s => isSlotBooked(comp.id, s)).length;
+        const availableCount = TIME_SLOTS.length - bookedCount;
+
+        const slotButtonsHtml = TIME_SLOTS.map(slot => {
+          const booked = isSlotBooked(comp.id, slot);
+          const isSelected = isCompSelected && state.selectedSlot === slot && !booked;
+          const rangeLabel = getSlotEndLabel(slot);
+
+          if (booked) {
+            return `
+              <button
+                type="button"
+                disabled
+                title="Créneau déjà réservé (${rangeLabel})"
+                class="px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed line-through"
+              >
+                ${rangeLabel} • Réservé
+              </button>
+            `;
+          }
+
+          return `
+            <button
+              type="button"
+              onclick="selectCompanyForBooking('${comp.id}'); selectSlotForBooking('${slot}')"
+              class="px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
+                isSelected
+                  ? "bg-blue-gradient text-white shadow-md ring-2 ring-sky-300"
+                  : "bg-white text-[#0C376A] border border-sky-200 hover:border-[#1E4E96] hover:bg-sky-50"
+              }"
+            >
+              ${rangeLabel}
+            </button>
+          `;
+        }).join("");
+
+        return `
+          <div class="rounded-3xl p-5 sm:p-6 bg-white border transition ${
+            isCompSelected ? "border-[#1E4E96] shadow-md ring-2 ring-sky-100" : "border-slate-200"
+          }">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-100">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="text-xl font-extrabold text-blue-gradient-soft">${escapeHtml(comp.name)}</h3>
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-cyan-50 text-[#0C376A] border border-cyan-200">
+                    ${escapeHtml(comp.room)}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">
+                  ${availableCount} créneau${availableCount > 1 ? "x" : ""} disponible${availableCount > 1 ? "s" : ""} sur ${TIME_SLOTS.length}
+                </p>
+              </div>
+              <button
+                type="button"
+                onclick="selectCompanyForBooking('${comp.id}')"
+                class="px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  isCompSelected
+                    ? "bg-[#0C376A] text-white"
+                    : "bg-sky-50 text-[#1E4E96] hover:bg-sky-100"
+                }"
+              >
+                ${isCompSelected ? "Entreprise active" : "Choisir cette entreprise"}
+              </button>
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-2">
+                <span>Matin (09h00 – 12h00)</span>
+                <span class="text-[11px] font-semibold normal-case text-cyan-800 bg-cyan-50 px-2.5 py-0.5 rounded-full border border-cyan-200">
+                  10 min d’entretien • 10 min de pause entre chaque
+                </span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                ${slotButtonsHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const selectedSlotSummary = state.selectedSlot
+        ? `<span class="font-extrabold text-[#1E4E96]">${escapeHtml(activeCompany.name)} (${escapeHtml(activeCompany.room)}) à ${escapeHtml(getSlotEndLabel(state.selectedSlot))}</span>`
+        : `<span class="text-slate-500">Aucun créneau sélectionné — cliquez sur un horaire disponible ci-dessus.</span>`;
+
+      workspace.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          ${companiesHtml}
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-sky-200 shadow-lg">
+          <div class="mb-5">
+            <span class="text-xs font-extrabold uppercase tracking-widest text-[#26A6B5]">Finalisation</span>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-blue-gradient mt-0.5">
+              Informations du candidat
+            </h3>
+            <p class="text-sm text-slate-600 mt-1">
+              Créneau choisi : ${selectedSlotSummary}
+            </p>
+          </div>
+
+          <form onsubmit="handleBookingSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="candidate-name-input" class="block text-sm font-bold text-slate-800 mb-1.5">
+                Nom et Prénom du candidat *
+              </label>
+              <input
+                id="candidate-name-input"
+                type="text"
+                required
+                value="${escapeHtml(state.candidateName)}"
+                oninput="state.candidateName = this.value"
+                placeholder="Ex. Camille Dupont"
+                class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-[#1E4E96] focus:ring-2 focus:ring-sky-200 outline-none transition"
+              />
+            </div>
+
+            <div>
+              <label for="candidate-email-input" class="block text-sm font-bold text-slate-800 mb-1.5">
+                Adresse e-mail *
+              </label>
+              <input
+                id="candidate-email-input"
+                type="email"
+                required
+                value="${escapeHtml(state.candidateEmail)}"
+                oninput="state.candidateEmail = this.value"
+                placeholder="Ex. camille.dupont@email.fr"
+                class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-[#1E4E96] focus:ring-2 focus:ring-sky-200 outline-none transition"
+              />
+            </div>
+
+            <div class="md:col-span-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+              <p class="text-xs text-slate-500">
+                La confirmation bloque immédiatement le créneau et génère vos 2 billets d’avion électroniques.
+              </p>
+              <button
+                type="submit"
+                ${!state.selectedSlot || state.isSubmitting ? "disabled" : ""}
+                class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm sm:text-base font-extrabold text-white bg-blue-gradient bg-blue-gradient-hover shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                ${state.isSubmitting ? "Enregistrement en cours..." : "Confirmer la réservation et générer ma carte d’embarquement"}
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // VALIDATION DE LA RÉSERVATION (TRANSACTION ANTI-DOUBLON) & 2 BILLETS
+    // =========================================================================
+
+    async function handleBookingSubmit(event) {
+      event.preventDefault();
+      if (state.isSubmitting) return;
+
+      const nameInputEl = document.getElementById("candidate-name-input");
+      const emailInputEl = document.getElementById("candidate-email-input");
+
+      const formation = getFormationById(state.selectedFormationId);
+      const company = getCompanyById(state.selectedCompanyId);
+      const slot = state.selectedSlot;
+      const candidateName = (nameInputEl ? nameInputEl.value : state.candidateName || "").trim();
+      const candidateEmail = (emailInputEl ? emailInputEl.value : state.candidateEmail || "").trim();
+
+      state.candidateName = candidateName;
+      state.candidateEmail = candidateEmail;
+
+      if (!formation || !company || !slot) {
+        showToast("Veuillez sélectionner une entreprise et un créneau horaire.", "error");
+        return;
+      }
+
+      if (!candidateName) {
+        showToast("Veuillez renseigner votre nom et prénom.", "error");
+        if (nameInputEl) nameInputEl.focus();
+        return;
+      }
+
+      if (!candidateEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidateEmail)) {
+        showToast("Veuillez renseigner une adresse e-mail valide.", "error");
+        if (emailInputEl) emailInputEl.focus();
+        return;
+      }
+
+      if (isSlotBooked(company.id, slot)) {
+        showToast("Ce créneau vient d’être réservé par un autre candidat.", "error");
+        renderBookingWorkspace();
+        return;
+      }
+
+      state.isSubmitting = true;
+      renderBookingWorkspace();
+
+      const slotDocId = getSlotDocId(company.id, slot);
+      const slotDisplay = getSlotEndLabel(slot);
+
+      const reservation = {
+        id: slotDocId,
+        formationId: formation.id,
+        formationName: formation.name,
+        companyId: company.id,
+        companyName: company.name,
+        room: company.room,
+        slot: slotDisplay,
+        candidateName: candidateName,
+        candidateEmail: candidateEmail,
+        createdBy: currentUser ? currentUser.uid : "local-user",
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        if (state.cloudEnabled && db && currentUser) {
+          const settings = getSharedSyncSettings();
+          const activeCollectionId = typeof __app_id !== "undefined" && __app_id && !settings.firebaseConfigJson
+            ? __app_id
+            : settings.roomKey || "formasup82-jobdating";
+          const slotDocRef = doc(db, "artifacts", activeCollectionId, "public", "data", "reservations", slotDocId);
+          await runTransaction(db, async (transaction) => {
+            const existingSnap = await transaction.get(slotDocRef);
+            if (existingSnap.exists()) {
+              throw new Error("SLOT_ALREADY_BOOKED");
+            }
+            transaction.set(slotDocRef, reservation);
+          });
+        } else {
+          const updated = [...state.reservations.filter(r => r.id !== slotDocId), reservation];
+          state.reservations = updated;
+          saveLocalFallbackReservations(updated);
+        }
+
+        state.latestConvocation = reservation;
+        state.selectedSlot = null;
+        state.candidateName = "";
+        state.candidateEmail = "";
+        state.isSubmitting = false;
+
+        renderBookingWorkspace();
+        renderTickets(reservation);
+
+        if (state.isAdminAuthenticated) {
+          renderAdminTable();
+        }
+
+        showToast("Créneau réservé et bloqué ! Envoi des e-mails...", "success");
+        scrollToSection("convocation-section");
+
+        const emailResult = await sendConfirmationEmails(reservation);
+        updateEmailStatusBanner({
+          ...emailResult,
+          candidateEmail: reservation.candidateEmail,
+          organizerEmail: EMAILJS_CONFIG.organizerEmail
+        });
+      } catch (err) {
+        state.isSubmitting = false;
+        if (err && err.message === "SLOT_ALREADY_BOOKED") {
+          state.selectedSlot = null;
+          showToast("Ce créneau vient tout juste d’être réservé par un autre candidat.", "error");
+        } else {
+          console.error("Erreur lors de la réservation :", err);
+          showToast("Erreur lors de l’enregistrement de la réservation.", "error");
+        }
+        renderBookingWorkspace();
+      }
+    }
+
+    async function sendConfirmationEmails(reservation) {
+      if (!window.emailjs || typeof window.emailjs.send !== "function") {
+        return { success: false, reason: "Bibliothèque EmailJS indisponible." };
+      }
+
+      const baseParams = {
+        candidate_name: reservation.candidateName,
+        candidate_email: reservation.candidateEmail,
+        formation_name: reservation.formationName,
+        company_name: reservation.companyName,
+        room_name: reservation.room,
+        time_slot: reservation.slot,
+        ticket_1_route: "ACCUEIL -> SALLE MEXICO",
+        ticket_2_route: `SALLE MEXICO -> ${reservation.room}`,
+        event_address: EVENT_INFO.address,
+        event_date: EVENT_INFO.eventDate
+      };
+
+      try {
+        await Promise.all([
+          window.emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+            ...baseParams,
+            to_email: reservation.candidateEmail,
+            to_name: reservation.candidateName
+          }),
+          window.emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+            ...baseParams,
+            to_email: EMAILJS_CONFIG.organizerEmail,
+            to_name: "Organisateur FORMASUP 82"
+          })
+        ]);
+        return { success: true };
+      } catch (error) {
+        console.error("Erreur envoi EmailJS :", error);
+        return { success: false, reason: (error && error.text) || "Erreur lors de l’envoi EmailJS." };
+      }
+    }
+
+    function updateEmailStatusBanner(status) {
+      const banner = document.getElementById("email-status-banner");
+      if (!banner) return;
+
+      banner.classList.remove("hidden", "bg-emerald-50", "border-emerald-200", "text-emerald-900", "bg-amber-50", "border-amber-200", "text-amber-900");
+
+      if (status.success) {
+        banner.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-900");
+        banner.textContent = `E-mails de confirmation envoyés automatiquement à ${status.candidateEmail} et à ${status.organizerEmail}.`;
+      } else {
+        banner.classList.add("bg-amber-50", "border-amber-200", "text-amber-900");
+        banner.textContent = `Votre réservation est bien enregistrée et vos 2 billets sont prêts ci-dessous. Note e-mail : ${status.reason || "vérifiez la configuration EmailJS"}.`;
+      }
+    }
+
+    // =========================================================================
+    // VISUEL FIDÈLE DES 2 BILLETS ÉLECTRONIQUES (DOCUMENT WORD)
+    // =========================================================================
+
+    function buildFormasupTicketLogo(sizeClass = "h-12 sm:h-14") {
+      return `
+        <svg class="${sizeClass} w-auto" viewBox="0 0 340 82" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FORMA SUP">
+          <text x="4" y="66" font-family="'Antonio', 'Arial Narrow', Impact, sans-serif" font-weight="700" font-size="68" letter-spacing="1.5" fill="#1E4E96">FORMA</text>
+          <text x="196" y="66" font-family="'Antonio', 'Arial Narrow', Impact, sans-serif" font-weight="500" font-size="68" letter-spacing="1.5" fill="#111111">SUP</text>
+          <path d="M306 12H330V31H321L313 42V31H306V12Z" fill="#72C3AD" />
+        </svg>
+      `;
+    }
+
+    function buildAerialDecorSvg() {
+      return `
+        <svg class="hidden sm:block absolute left-0 top-0 w-44 h-44 text-[#0C376A]/20 pointer-events-none" viewBox="0 0 180 180" fill="none" aria-hidden="true">
+          <circle cx="28" cy="34" r="56" stroke="#26A6B5" stroke-opacity="0.22" stroke-width="1.5" />
+          <line x1="0" y1="95" x2="95" y2="0" stroke="#0C376A" stroke-width="3.5" />
+          <line x1="0" y1="115" x2="115" y2="0" stroke="#26A6B5" stroke-width="2.5" />
+          <path d="M45 68C68 58 88 42 108 26" stroke="#26A6B5" stroke-width="2" stroke-dasharray="4 4" />
+          <path d="M104 22L117 20L111 32L108 26L104 22Z" fill="#26A6B5" />
+        </svg>
+
+        <svg class="hidden sm:block absolute right-0 top-0 w-48 h-48 pointer-events-none" viewBox="0 0 200 200" fill="none" aria-hidden="true">
+          <circle cx="176" cy="24" r="64" fill="#0C376A" fill-opacity="0.88" />
+          <circle cx="186" cy="14" r="42" fill="#26A6B5" fill-opacity="0.35" />
+          <line x1="115" y1="135" x2="200" y2="50" stroke="#0C376A" stroke-width="3" />
+          <line x1="130" y1="145" x2="200" y2="75" stroke="#26A6B5" stroke-width="2.5" />
+          <path d="M120 42C136 56 144 74 134 86C125 97 112 88 118 76C124 65 148 70 165 88" stroke="#26A6B5" stroke-width="2" stroke-dasharray="4 4" />
+          <path d="M114 38L126 39L120 49L118 43L114 38Z" fill="#26A6B5" />
+        </svg>
+
+        <svg class="hidden sm:block absolute right-3 bottom-2 w-40 h-32 pointer-events-none" viewBox="0 0 180 130" fill="none" aria-hidden="true">
+          <line x1="65" y1="130" x2="180" y2="15" stroke="#26A6B5" stroke-width="2.5" />
+          <line x1="88" y1="130" x2="180" y2="38" stroke="#26A6B5" stroke-width="2" />
+          <line x1="112" y1="130" x2="180" y2="62" stroke="#26A6B5" stroke-width="3" />
+        </svg>
+      `;
+    }
+
+    function buildLoopPlaneSvg() {
+      return `
+        <svg class="w-36 h-20 shrink-0 pointer-events-none" viewBox="0 0 150 85" fill="none" aria-hidden="true">
+          <path d="M8 62C36 74 68 68 74 48C78 34 62 26 55 36C49 44 62 56 95 45C112 39 124 28 134 18" stroke="#0C376A" stroke-width="2.2" stroke-dasharray="4 4" />
+          <g transform="translate(114, 6) rotate(-32)">
+            <path d="M18 14L32 10L24 18L34 26L22 27L14 19L5 22L2 19L9 15L4 7L8 6L15 13Z" fill="#0C376A" />
+          </g>
+        </svg>
+      `;
+    }
+
+    function renderTickets(reservation) {
+      const section = document.getElementById("convocation-section");
+      const area = document.getElementById("tickets-printable-area");
+      if (!section || !area || !reservation) return;
+
+      const passenger = escapeHtml(reservation.candidateName);
+      const slotTime = escapeHtml(reservation.slot);
+      const roomName = escapeHtml(reservation.room);
+      const companyName = escapeHtml(EVENT_INFO.company);
+      const address = escapeHtml(EVENT_INFO.address);
+      const ticketDate = escapeHtml(EVENT_INFO.ticketDate);
+
+      const ticket1 = `
+        <article class="ticket-sheet" aria-label="Billet d'avion 1 – Carte d'embarquement Job Dating">
+          ${buildAerialDecorSvg()}
+          <div class="ticket-sheet-inner">
+            <div class="text-center mb-4">
+              <div class="flex justify-center">
+                ${buildFormasupTicketLogo("h-12 sm:h-14")}
+              </div>
+              <div class="text-sm sm:text-base font-black tracking-[0.14em] uppercase text-slate-950 mt-0.5">
+                CARTE D’EMBARQUEMENT JOB DATING
+              </div>
+            </div>
+
+            <div class="ticket-card">
+              <div class="grid grid-cols-1 md:grid-cols-12">
+                <div class="md:col-span-8 flex flex-col justify-between">
+                  <div class="bg-[#0C376A] text-white px-5 py-2.5 flex items-center justify-between gap-2">
+                    <span class="font-extrabold text-sm sm:text-base tracking-wide">
+                      Billet d’avion – Embarquement Job Dating
+                    </span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm bg-white/15">
+                      1 / 2
+                    </span>
+                  </div>
+
+                  <div class="p-5 sm:p-6 space-y-3.5 relative bg-white">
+                    <svg class="hidden sm:block absolute right-4 top-3 w-28 h-24 text-[#26A6B5]/45 pointer-events-none" viewBox="0 0 120 95" fill="none" aria-hidden="true">
+                      <path d="M18 16C42 26 52 54 44 65C37 74 26 65 34 55C41 46 68 58 106 68" stroke="#26A6B5" stroke-width="1.8" stroke-dasharray="3.5 3.5" />
+                      <path d="M6 10L20 12L14 22L11 16L6 10Z" fill="#26A6B5" />
+                    </svg>
+
+                    <div class="flex flex-wrap items-baseline gap-4">
+                      <span class="text-xs font-black uppercase tracking-wider text-slate-950">COMPAGNIE</span>
+                      <span class="text-base sm:text-lg font-black text-slate-950">${companyName}</span>
+                    </div>
+
+                    <div>
+                      <div class="text-xs font-black uppercase tracking-wider text-slate-950">LIEU / ADRESSE</div>
+                      <div class="text-sm sm:text-base font-extrabold text-[#26A6B5]">${address}</div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center pt-0.5">
+                      <div class="sm:col-span-7 passenger-box">
+                        <div class="text-[11px] font-black uppercase tracking-wider text-slate-950">PASSAGER</div>
+                        <div class="text-lg sm:text-xl font-extrabold text-[#26A6B5] leading-snug">${passenger}</div>
+                      </div>
+                      <div class="sm:col-span-5">
+                        <div class="text-xs font-black uppercase tracking-wider text-slate-950">VOL</div>
+                        <div class="text-base sm:text-lg font-black text-slate-950">JOB DATING</div>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                      <div>
+                        <div class="text-xs font-black uppercase tracking-wider text-slate-950">DÉPART / FROM</div>
+                        <div class="text-base sm:text-lg font-extrabold text-[#26A6B5]">ACCUEIL</div>
+                      </div>
+                      <div>
+                        <div class="text-xs font-black uppercase tracking-wider text-slate-950">ARRIVÉE / TO</div>
+                        <div class="text-base sm:text-lg font-extrabold text-[#26A6B5]">SALLE MEXICO</div>
+                      </div>
+                    </div>
+
+                    <div class="flex items-end justify-between gap-3 pt-1">
+                      <div>
+                        <div class="text-xs font-black uppercase tracking-wider text-slate-950">DATE</div>
+                        <div class="text-base sm:text-lg font-extrabold text-[#26A6B5]">${ticketDate}</div>
+                      </div>
+                      ${buildLoopPlaneSvg()}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="md:col-span-4 ticket-stub flex flex-col justify-between">
+                  <div class="bg-[#0C376A] text-white px-4 py-2.5 font-extrabold text-sm sm:text-base text-center md:text-left">
+                    Boarding Pass
+                  </div>
+
+                  <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div class="flex justify-center md:justify-start">
+                      ${buildFormasupTicketLogo("h-8")}
+                    </div>
+
+                    <div class="space-y-2.5 text-xs">
+                      <div>
+                        <div class="font-black uppercase text-slate-950">VOL / FLIGHT</div>
+                        <div class="font-black text-slate-950 text-sm">JOB DATING</div>
+                      </div>
+                      <div>
+                        <div class="font-black uppercase text-slate-950">DE / FROM</div>
+                        <div class="font-extrabold text-slate-950 text-sm">ACCUEIL</div>
+                      </div>
+                      <div>
+                        <div class="font-black uppercase text-slate-950">À / TO</div>
+                        <div class="font-extrabold text-slate-950 text-sm">SALLE MEXICO</div>
+                      </div>
+                    </div>
+
+                    <div class="barcode-visual" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+
+      const ticket2 = `
+        <article class="ticket-sheet" aria-label="Billet d'avion 2 – Carte d'embarquement Job Dating">
+          ${buildAerialDecorSvg()}
+          <div class="ticket-sheet-inner">
+            <div class="text-center mb-4">
+              <div class="flex justify-center">
+                ${buildFormasupTicketLogo("h-12 sm:h-14")}
+              </div>
+              <div class="text-sm sm:text-base font-black tracking-[0.14em] uppercase text-slate-950 mt-0.5">
+                CARTE D’EMBARQUEMENT JOB DATING
+              </div>
+            </div>
+
+            <div class="ticket-card">
+              <div class="grid grid-cols-1 md:grid-cols-12">
+                <div class="md:col-span-8 flex flex-col justify-between">
+                  <div class="bg-[#0C376A] text-white px-5 py-2.5 flex items-center justify-between gap-2">
+                    <span class="font-extrabold text-sm sm:text-base tracking-wide">
+                      Billet d’avion – Embarquement Job Dating
+                    </span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm bg-white/15">
+                      2 / 2
+                    </span>
+                  </div>
+
+                  <div class="p-5 sm:p-6 space-y-3 relative bg-white">
+                    <svg class="hidden sm:block absolute right-4 top-3 w-28 h-24 text-[#26A6B5]/45 pointer-events-none" viewBox="0 0 120 95" fill="none" aria-hidden="true">
+                      <path d="M18 16C42 26 52 54 44 65C37 74 26 65 34 55C41 46 68 58 106 68" stroke="#26A6B5" stroke-width="1.8" stroke-dasharray="3.5 3.5" />
+                      <path d="M6 10L20 12L14 22L11 16L6 10Z" fill="#26A6B5" />
+                    </svg>
+
+                    <div class="flex flex-wrap items-baseline gap-4">
+                      <span class="text-xs font-black uppercase tracking-wider text-slate-950">COMPAGNIE</span>
+                      <span class="text-base sm:text-lg font-black text-slate-950">${companyName}</span>
+                    </div>
+
+                    <div>
+                      <div class="text-xs font-black uppercase tracking-wider text-slate-950">LIEU / ADRESSE</div>
+                      <div class="text-sm sm:text-base font-extrabold text-[#26A6B5]">${address}</div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center pt-0.5">
+                      <div class="sm:col-span-7 passenger-box">
+                        <div class="text-[11px] font-black uppercase tracking-wider text-slate-950">PASSAGER</div>
+                        <div class="text-lg sm:text-xl font-extrabold text-[#26A6B5] leading-snug">${passenger}</div>
+                      </div>
+                      <div class="sm:col-span-5">
+                        <div class="text-xs font-black uppercase tracking-wider text-slate-950">VOL</div>
+                        <div class="text-base sm:text-lg font-black text-slate-950">JOB DATING</div>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 pt-0.5">
+                      <span class="text-xs font-black uppercase tracking-wider text-slate-950">HEURE DE RDV / BOARDING</span>
+                      <span class="boarding-time-badge text-base sm:text-lg">${slotTime}</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-0.5">
+                      <div>
+                        <div class="text-xs font-black uppercase tracking-wider text-slate-950">DÉPART / FROM</div>
+                        <div class="text-base sm:text-lg font-extrabold text-[#26A6B5]">SALLE MEXICO</div>
+                      </div>
+                      <div>
+                        <div class="text-xs font-black uppercase tracking-wider text-slate-950">ARRIVÉE / TO</div>
+                        <div class="text-base sm:text-lg font-extrabold text-[#26A6B5]">${roomName}</div>
+                      </div>
+                    </div>
+
+                    <div class="flex items-end justify-between gap-3 pt-0.5">
+                      <div>
+                        <div class="text-xs font-black uppercase tracking-wider text-slate-950">DATE</div>
+                        <div class="text-base sm:text-lg font-extrabold text-[#26A6B5]">${ticketDate}</div>
+                      </div>
+                      ${buildLoopPlaneSvg()}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="md:col-span-4 ticket-stub flex flex-col justify-between">
+                  <div class="bg-[#0C376A] text-white px-4 py-2.5 font-extrabold text-sm sm:text-base text-center md:text-left">
+                    Boarding Pass
+                  </div>
+
+                  <div class="p-5 flex-1 flex flex-col justify-between space-y-2.5">
+                    <div class="flex justify-center md:justify-start">
+                      ${buildFormasupTicketLogo("h-8")}
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                      <div>
+                        <div class="font-black uppercase text-slate-950">VOL / FLIGHT</div>
+                        <div class="font-black text-slate-950 text-sm">JOB DATING</div>
+                      </div>
+                      <div>
+                        <div class="font-black uppercase text-slate-950">DE / FROM</div>
+                        <div class="font-extrabold text-slate-950 text-sm">SALLE MEXICO</div>
+                      </div>
+                      <div>
+                        <div class="font-black uppercase text-slate-950">À / TO</div>
+                        <div class="font-black text-slate-950 text-sm">${roomName}</div>
+                      </div>
+                      <div>
+                        <div class="font-black uppercase text-slate-950">HEURE / TIME</div>
+                        <div class="font-black text-slate-950 text-sm">${slotTime}</div>
+                      </div>
+                    </div>
+
+                    <div class="barcode-visual" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+
+      area.innerHTML = ticket1 + ticket2;
+      section.classList.remove("hidden");
+    }
+
+    async function downloadConvocationPdf() {
+      const area = document.getElementById("tickets-printable-area");
+      const btn = document.getElementById("download-pdf-btn");
+      if (!area || !window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
+        window.print();
+        return;
+      }
+
+      const originalText = btn ? btn.innerHTML : "";
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Génération du PDF...";
+      }
+
+      try {
+        const canvas = await window.html2canvas(area, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff"
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4"
+        });
+
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        const printableWidth = pageWidth - margin * 2;
+        const printableHeight = pageHeight - margin * 2;
+        const imgHeight = (canvas.height * printableWidth) / canvas.width;
+
+        let heightLeft = imgHeight;
+        let position = margin;
+
+        pdf.addImage(imgData, "PNG", margin, position, printableWidth, imgHeight, undefined, "FAST");
+        heightLeft -= printableHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight + margin;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", margin, position, printableWidth, imgHeight, undefined, "FAST");
+          heightLeft -= printableHeight;
+        }
+
+        const safeName = (state.latestConvocation && state.latestConvocation.candidateName)
+          ? state.latestConvocation.candidateName.toLowerCase().replace(/[^a-z0-9]+/gi, "-")
+          : "candidat";
+        pdf.save(`carte-embarquement-job-dating-${safeName}.pdf`);
+      } catch (err) {
+        console.error("Erreur génération PDF :", err);
+        window.print();
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+    }
+
+    async function deleteReservation(id) {
+      if (!state.isAdminAuthenticated) return;
+
+      try {
+        if (state.cloudEnabled && db && currentUser) {
+          const settings = getSharedSyncSettings();
+          const activeCollectionId = typeof __app_id !== "undefined" && __app_id && !settings.firebaseConfigJson
+            ? __app_id
+            : settings.roomKey || "formasup82-jobdating";
+          const docRef = doc(db, "artifacts", activeCollectionId, "public", "data", "reservations", id);
+          await deleteDoc(docRef);
+        } else {
+          state.reservations = state.reservations.filter(r => r.id !== id);
+          saveLocalFallbackReservations(state.reservations);
+          renderAdminTable();
+          renderBookingWorkspace();
+        }
+        showToast("Réservation supprimée et créneau libéré.", "info");
+      } catch (err) {
+        console.error("Erreur suppression réservation :", err);
+        showToast("Impossible de libérer ce créneau.", "error");
+      }
+    }
+
+    function reserveAnotherSlot() {
+      state.selectedSlot = null;
+      renderBookingWorkspace();
+      scrollToSection("formations-section");
+    }
+
+    // =========================================================================
+    // ESPACE ADMIN & EXPORT EXCEL (.XLSX VIA SHEETJS)
+    // =========================================================================
+
+    function openAdminModalOrPanel() {
+      if (state.isAdminAuthenticated) {
+        const panel = document.getElementById("admin-panel-section");
+        if (panel) {
+          panel.classList.remove("hidden");
+          populateSharedSyncInputs();
+          renderAdminTable();
+          scrollToSection("admin-panel-section");
+        }
+        return;
+      }
+
+      const modal = document.getElementById("admin-login-modal");
+      const errEl = document.getElementById("admin-login-error");
+      const inputEl = document.getElementById("admin-password-input");
+      if (modal) {
+        if (errEl) errEl.classList.add("hidden");
+        if (inputEl) inputEl.value = "";
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        setTimeout(() => inputEl && inputEl.focus(), 60);
+      }
+    }
+
+    function closeAdminModal() {
+      const modal = document.getElementById("admin-login-modal");
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+    }
+
+    function handleAdminLogin(event) {
+      event.preventDefault();
+      const inputEl = document.getElementById("admin-password-input");
+      const errEl = document.getElementById("admin-login-error");
+      const value = inputEl ? inputEl.value : "";
+
+      if (isValidAdminPasscode(value)) {
+        state.isAdminAuthenticated = true;
+        closeAdminModal();
+        updateAdminUiState();
+        populateSharedSyncInputs();
+        renderAdminTable();
+        scrollToSection("admin-panel-section");
+        showToast("Connexion administrateur réussie.", "success");
+      } else {
+        if (errEl) errEl.classList.remove("hidden");
+        showToast("Mot de passe incorrect.", "error");
+      }
+    }
+
+    function logoutAdmin() {
+      state.isAdminAuthenticated = false;
+      updateAdminUiState();
+      showToast("Déconnexion de l’espace administrateur.", "info");
+    }
+
+    function updateAdminUiState() {
+      const panel = document.getElementById("admin-panel-section");
+      const label = document.getElementById("admin-nav-label");
+      if (panel) {
+        panel.classList.toggle("hidden", !state.isAdminAuthenticated);
+      }
+      if (label) {
+        label.textContent = state.isAdminAuthenticated ? "Espace Admin" : "Accès Admin";
+      }
+    }
+
+    function renderAdminTable() {
+      const tbody = document.getElementById("admin-reservations-tbody");
+      const countEl = document.getElementById("admin-total-count");
+      if (!tbody) return;
+
+      if (countEl) {
+        countEl.textContent = String(state.reservations.length);
+      }
+
+      if (state.reservations.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="px-4 py-8 text-center text-slate-500 font-medium">
+              Aucune réservation enregistrée pour le moment.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const sorted = [...state.reservations].sort((a, b) => {
+        if (a.slot !== b.slot) return a.slot.localeCompare(b.slot);
+        return a.companyName.localeCompare(b.companyName, "fr");
+      });
+
+      tbody.innerHTML = sorted
+        .map(res => `
+          <tr class="hover:bg-sky-50/40 transition">
+            <td class="px-4 py-3 font-bold text-[#0C376A]">${escapeHtml(res.companyName)}</td>
+            <td class="px-4 py-3 text-slate-700">${escapeHtml(res.formationName)}</td>
+            <td class="px-4 py-3">
+              <span class="inline-flex px-2.5 py-0.5 rounded-md text-xs font-bold bg-sky-100 text-[#0C376A]">
+                ${escapeHtml(res.room)}
+              </span>
+            </td>
+            <td class="px-4 py-3 font-semibold text-slate-900">${escapeHtml(res.candidateName)}</td>
+            <td class="px-4 py-3 font-bold text-[#26A6B5]">${escapeHtml(res.slot)}</td>
+            <td class="px-4 py-3 text-slate-700">${escapeHtml(res.candidateEmail)}</td>
+            <td class="px-4 py-3 text-slate-500 text-xs">${escapeHtml(formatCreatedAt(res.createdAt))}</td>
+            <td class="px-4 py-3 text-right">
+              <button
+                type="button"
+                onclick="deleteReservation('${res.id}')"
+                class="px-3 py-1.5 rounded-lg text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 transition cursor-pointer"
+              >
+                Libérer
+              </button>
+            </td>
+          </tr>
+        `)
+        .join("");
+    }
+
+    function exportReservationsToXlsx() {
+      if (!state.isAdminAuthenticated) {
+        showToast("Accès réservé aux administrateurs.", "error");
+        return;
+      }
+
+      if (!window.XLSX) {
+        showToast("Bibliothèque Excel (.xlsx) non chargée.", "error");
+        return;
+      }
+
+      const rows = state.reservations.map(r => ({
+        "Entreprise choisie": r.companyName,
+        "Formation": r.formationName,
+        "Salle": r.room,
+        "Nom et Prénom du candidat": r.candidateName,
+        "Heure de l'entretien": r.slot,
+        "Adresse mail": r.candidateEmail,
+        "Date/heure d'enregistrement": formatCreatedAt(r.createdAt)
+      }));
+
+      const worksheet = window.XLSX.utils.json_to_sheet(rows.length > 0 ? rows : [{
+        "Entreprise choisie": "",
+        "Formation": "",
+        "Salle": "",
+        "Nom et Prénom du candidat": "",
+        "Heure de l'entretien": "",
+        "Adresse mail": "",
+        "Date/heure d'enregistrement": ""
+      }]);
+
+      worksheet["!cols"] = [
+        { wch: 18 },
+        { wch: 36 },
+        { wch: 16 },
+        { wch: 28 },
+        { wch: 20 },
+        { wch: 30 },
+        { wch: 24 }
+      ];
+
+      const workbook = window.XLSX.utils.book_new();
+      window.XLSX.utils.book_append_sheet(workbook, worksheet, "Réservations");
+      window.XLSX.writeFile(workbook, "reservations-job-dating-formasup82.xlsx");
+
+      showToast("Fichier Excel (.xlsx) exporté.", "success");
+    }
+
+    // =========================================================================
+    // EXPOSITION DES FONCTIONS POUR LES GESTIONNAIRES HTML & INITIALISATION
+    // =========================================================================
+
+    Object.assign(window, {
+      resetToHome,
+      scrollToSection,
+      openFormationBooking,
+      selectCompanyForBooking,
+      selectSlotForBooking,
+      handleBookingSubmit,
+      downloadConvocationPdf,
+      reserveAnotherSlot,
+      openAdminModalOrPanel,
+      closeAdminModal,
+      handleAdminLogin,
+      logoutAdmin,
+      deleteReservation,
+      exportReservationsToXlsx,
+      saveSharedSyncConfig,
+      clearSharedSyncConfig
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderFormations();
+      renderBookingWorkspace();
+      updateAdminUiState();
+      populateSharedSyncInputs();
+      initCloudSync();
+    });
+  </script>
+</body>
+</html>
